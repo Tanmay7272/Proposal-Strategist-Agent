@@ -1,0 +1,18 @@
+services:
+  proposal-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: proposal-agent
+    ports:
+      - "3001:3001"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ACCESS_TOKEN=${ACCESS_TOKEN:-}
+      - MODEL=${MODEL:-gemini-2.5-flash}
+      - PORT=3001
+      - DATA_DIR=/app/data
+    volumes:
+      # Persists proposal history and saved company profiles on the host
+      - ./data:/app/data
+    restart: unless-stopped
