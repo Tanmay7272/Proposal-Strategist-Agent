@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Proposal Strategist Agent
 
 An AI agent that turns an RFP into a win strategy. Sales teams upload an RFP in a web app (or run it from the command line) and get back, in a few minutes:
@@ -72,4 +71,3 @@ samples/              sample RFP and company profile
 =======
 # Proposal-Strategist-Agent
 Strategic proposal architect who transforms RFPs and sales opportunities into compelling win narratives. Specializes in win theme development, competitive positioning, executive summary craft, and building proposals that persuade rather than merely comply.
->>>>>>> 732780331cc3e3521dce672f8e1dff7f8c3cb7cb
