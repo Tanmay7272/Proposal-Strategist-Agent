@@ -13,7 +13,8 @@ import { initStore, saveJob, getJob, listJobs, getCompanyProfile, saveCompanyPro
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT) || 8080;
 const MODEL = process.env.MODEL || DEFAULT_MODEL;
-const ACCESS_TOKEN = process.env.ACCESS_TOKEN || '';
+const rawToken = (process.env.ACCESS_TOKEN || '').trim();
+const ACCESS_TOKEN = (rawToken.startsWith('ACCESS_TOKEN=') ? rawToken.slice('ACCESS_TOKEN='.length) : rawToken).trim().replace(/^["']|["']$/g, '');
 const MOCK = process.env.MOCK_AI === '1';
 
 if (!process.env.GEMINI_API_KEY && !MOCK) {
@@ -28,7 +29,7 @@ app.use(express.json({ limit: '2mb' }));
 // Optional shared access token. Set ACCESS_TOKEN to require it on every API call.
 app.use('/api', (req, res, next) => {
   if (!ACCESS_TOKEN || req.path === '/config') return next();
-  const given = req.get('x-access-token') || '';
+  const given = (req.get('x-access-token') || '').trim().replace(/^["']|["']$/g, '');
   const a = Buffer.from(given);
   const b = Buffer.from(ACCESS_TOKEN);
   if (a.length === b.length && crypto.timingSafeEqual(a, b)) return next();
