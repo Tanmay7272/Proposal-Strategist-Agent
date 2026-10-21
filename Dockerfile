@@ -21,7 +21,7 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3001
+ENV PORT=8080
 ENV DATA_DIR=/app/data
 
 # Install root production dependencies only
@@ -42,7 +42,7 @@ COPY --from=builder /app/web/dist ./web/dist
 RUN mkdir -p /app/data
 
 # Expose default application port
-EXPOSE 3001
+EXPOSE 8080
 
 # Start Express server (serves API + static React SPA)
 CMD ["node", "server/index.js"]

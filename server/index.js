@@ -11,14 +11,13 @@ import { extractText, ExtractionError, ALLOWED_EXTENSIONS } from './extract.js';
 import { initStore, saveJob, getJob, listJobs, getCompanyProfile, saveCompanyProfile } from './store.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PORT = Number(process.env.PORT) || 3001;
+const PORT = Number(process.env.PORT) || 8080;
 const MODEL = process.env.MODEL || DEFAULT_MODEL;
 const ACCESS_TOKEN = process.env.ACCESS_TOKEN || '';
 const MOCK = process.env.MOCK_AI === '1';
 
 if (!process.env.GEMINI_API_KEY && !MOCK) {
-  console.error('GEMINI_API_KEY is not set. Copy .env.example to .env and add your key (or set MOCK_AI=1 to test without one).');
-  process.exit(1);
+  console.warn('⚠️ Warning: GEMINI_API_KEY is not set in environment variables. Set GEMINI_API_KEY for proposal generation.');
 }
 
 const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || 'mock' });
@@ -82,6 +81,10 @@ app.post(
   upload.fields([{ name: 'rfp', maxCount: 1 }, { name: 'company', maxCount: 1 }]),
   async (req, res) => {
     try {
+      if (!process.env.GEMINI_API_KEY && !MOCK) {
+        return res.status(500).json({ error: 'GEMINI_API_KEY is not configured on the server. Please add it to your environment variables.' });
+      }
+
       const buyer = String(req.body.buyer || '').trim();
       if (!buyer) return res.status(400).json({ error: 'Buyer name is required.' });
       if (buyer.length > 200) return res.status(400).json({ error: 'Buyer name is too long.' });
@@ -206,7 +209,7 @@ if (existsSync(dist)) {
 }
 
 await initStore();
-app.listen(PORT, () => {
-  console.log(`Proposal Strategist server on http://localhost:${PORT}${MOCK ? '  (MOCK_AI mode)' : ''}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Proposal Strategist server on http://0.0.0.0:${PORT}${MOCK ? '  (MOCK_AI mode)' : ''}`);
   if (!ACCESS_TOKEN) console.log('Note: ACCESS_TOKEN is not set, so anyone who can reach this server can use it.');
 });
